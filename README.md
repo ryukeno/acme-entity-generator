@@ -1,6 +1,6 @@
 # Acme Co — API Entity Generator Tool
 
-This is a **modular, sandbox-safe simulation tool** created for technical assessment purposes.
+This is a **modular, sandbox-safe simulation tool** created for technical assessment purposes.  
 It demonstrates how to **programmatically manage support platform entities** — including organizations, users, and tickets — using best-practice API integration flows.
 
 ---
@@ -9,72 +9,57 @@ It demonstrates how to **programmatically manage support platform entities** —
 
 This system consists of two decoupled components:
 
-| Component         | Description                                                        |
-| ----------------- | ------------------------------------------------------------------ |
-| 🔵 Frontend UI    | OAuth2 (PKCE)–based CodePen web interface for interactive demo     |
-| 🟢 Backend Script | Node.js CLI tool for entity generation and cleanup using API token |
+| Component         | Description                                                                                   |
+|-------------------|-----------------------------------------------------------------------------------------------|
+| 🔵 Frontend UI    | OAuth2 (PKCE)–based CodePen web interface for simulation and configuration (no real API calls) |
+| 🟢 Backend Script | Node.js CLI tool for real entity generation and cleanup using API token or OAuth token         |
 
 ### 🔗 Live Frontend Demo
 
-👉 [Launch CodePen UI](https://codepen.io/Kyrian-Bourgi/pen/empBQbe)
+👉 [**Launch CodePen UI**](https://codepen.io/Kyrian-Bourgi/pen/empBQbe)
 
 ---
 
 ## ⚙️ Key Features
 
-### ✅ Entity Creation (`create_entities.js`)
+### Entity Creation (`create_entities.js`)
+- Creates **10 organizations** (unique timestamped name)
+- Creates **10 users**, each with:
+  - Two emails (primary + alias)
+  - Linked to an organization
+- Creates **10 tickets**:
+  - Each ticket has a unique requester and a separate CC user
+- Real-time logging in console
 
-* 10 **organizations**, uniquely named via timestamp-based `runId`
-* 10 **users**, each with:
-
-  * Two emails (primary + alias)
-  * Organization assignment
-* 10 **tickets**, each with:
-
-  * A unique requester
-  * A separate user as CC
-* Real-time logging of all operations with entity IDs
-
-### 🧹 Entity Cleanup (`bulk_delete_entities.js`)
-
-* Automatically identifies latest `runId` from org names
-* Deletes:
-
-  * Tickets titled `"Issue #X"`
-  * Users with `userX@example.com` patterns
-  * Organizations containing the `runId`
-* Includes:
-
-  * Forced user deletion (handles ticket linkage)
-  * Idempotent logic for safe re-runs
+### Entity Cleanup (`bulk_delete_entities.js`)
+- Finds latest runId from organization names
+- Deletes:
+  - Tickets titled `"Issue #X"`
+  - Users with `userX@example.com`
+  - Orgs with current `runId`
+- Handles forced user deletion if linked to tickets
+- Idempotent: safe to re-run
 
 ---
 
 ## 🔐 Authentication & Security
 
 | Auth Method      | Purpose                   | Used In          |
-| ---------------- | ------------------------- | ---------------- |
-| 🔑 API Token     | Server-side CLI testing   | Node backend     |
-| 🔐 OAuth2 + PKCE | Frontend-safe interaction | CodePen frontend |
+|------------------|--------------------------|------------------|
+| 🔑 API Token     | CLI testing               | Node backend     |
+| 🔐 OAuth2 + PKCE | Frontend config/demo only | CodePen frontend |
 
-* API tokens are **never exposed client-side**
-* OAuth2 + PKCE ensures **secure delegated access** via browser
+- API tokens **never** used in browser, only in your local scripts
+- OAuth2 + PKCE is for frontend config demo — real API calls are always server-side
 
 ---
 
-## 🌐 CORS Considerations & Realities (Frontend API Access)
+## 🌐 CORS Considerations (Frontend Reality)
 
-Modern support platforms enforce strict **CORS policies** that often block frontend requests, even when using OAuth2 with PKCE, due to backend API restrictions and browser security.
-
-While **OAuth2 with PKCE** allows delegated, secure frontend-only API access, in practice **many endpoints remain blocked by CORS policies** on public demo platforms like CodePen.
-
-This means:
-
-* ❌ You cannot rely solely on frontend OAuth2 + PKCE in public demos to make all API calls.
-* ✅ A secure backend proxy or CLI tool using API tokens is necessary for full API access and entity management.
-* ⚠️ Frontend OAuth2 + PKCE is excellent for interactive demos but limited by browser and platform CORS restrictions.
-
-> For a fully functional system, run the Node.js backend scripts with API tokens to create and clean up entities securely and reliably.
+**You cannot create/delete real data from the CodePen frontend!**  
+All API requests are blocked by CORS, even with OAuth2.  
+**Only the backend scripts actually perform operations**.  
+UI is a config simulator and demo — not a real data manager.
 
 ---
 
@@ -82,7 +67,7 @@ This means:
 
 ### Prerequisites
 
-* Install Node.js → [https://nodejs.org](https://nodejs.org)
+- Install Node.js → [https://nodejs.org](https://nodejs.org)
 
 ### Install dependencies & run scripts
 
@@ -96,29 +81,20 @@ node create_entities.js
 node bulk_delete_entities.js
 ```
 
-## 📁 Files & Structure
-
-| FileDescription           |                                         |
-| ------------------------- | --------------------------------------- |
-| `create_entities.js`      | Script to generate orgs, users, tickets |
-| `bulk_delete_entities.js` | Cleanup script by latest runId          |
-| `README.md`               | This documentation                      |
-
 ---
 
 ## 🧠 Architect Notes
 
-* 🔄 Fully modular and **idempotent**
-* ✅ CORS-compliant frontend (PKCE)
-* ✅ Error handling built-in
-* 🎯 Follows secure design principles for API-first platforms and OAuth-based integrations
-
-> Built for demo and technical assessment purposes — not intended for production use without modification.
+- 🔄 **Fully modular and idempotent**
+- ✅ **No sensitive tokens in UI/frontend code**
+- ✅ **Error handling built-in in backend scripts**
+- 🎯 **CORS-compliant:** only backend does real API actions
+- ⚠️ **No production use without adaptation**
 
 ---
 
 ## 👤 Author
 
-Prepared by **Kyrian Bourgi**
-➡️ [LinkedIn](https://www.linkedin.com/in/kyrian-bourgi-715200b3/)
-🎯 CodePen: [Entity Generator UI](https://codepen.io/Kyrian-Bourgi/pen/empBQbe)
+Prepared by **Kyrian Bourgi**  
+[LinkedIn](https://www.linkedin.com/in/kyrian-bourgi-715200b3/)  
+[Entity Generator UI (CodePen)](https://codepen.io/Kyrian-Bourgi/pen/empBQbe)
