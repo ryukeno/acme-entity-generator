@@ -62,16 +62,19 @@ This system consists of two decoupled components:
 
 ---
 
-## 🌐 CORS Considerations (Frontend API Access)
+## 🌐 CORS Considerations & Realities (Frontend API Access)
 
-Modern support platforms enforce strict **CORS policies** to block frontend requests using API tokens.
+Modern support platforms enforce strict **CORS policies** that often block frontend requests, even when using OAuth2 with PKCE, due to backend API restrictions and browser security.
 
-This is solved by:
+While **OAuth2 with PKCE** allows delegated, secure frontend-only API access, in practice **many endpoints remain blocked by CORS policies** on public demo platforms like CodePen.
 
-* ❌ Never using API tokens in frontend code
-* ✅ Using **OAuth2 with PKCE**, which allows secure frontend-only API access via delegated user authorization
+This means:
 
-> The frontend uses a **public OAuth client** with PKCE, allowing **direct browser-to-API access** — no server proxy needed.
+* ❌ You cannot rely solely on frontend OAuth2 + PKCE in public demos to make all API calls.
+* ✅ A secure backend proxy or CLI tool using API tokens is necessary for full API access and entity management.
+* ⚠️ Frontend OAuth2 + PKCE is excellent for interactive demos but limited by browser and platform CORS restrictions.
+
+> For a fully functional system, run the Node.js backend scripts with API tokens to create and clean up entities securely and reliably.
 
 ---
 
