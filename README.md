@@ -1,7 +1,7 @@
-# Acme Co — API Entity Generator Tool
+# Acme Co  API Entity Generator Tool
 
 This is a **modular, sandbox-safe simulation tool** created for technical assessment purposes.  
-It demonstrates how to **programmatically manage support platform entities** — including organizations, users, and tickets — using best-practice API integration flows.
+It demonstrates how to **programmatically manage support platform entities**  including organizations, users, and tickets  using best-practice API integration flows.
 
 ---
 
@@ -50,7 +50,7 @@ This system consists of two decoupled components:
 | 🔐 OAuth2 + PKCE | Frontend config/demo only | CodePen frontend |
 
 - API tokens **never** used in browser, only in your local scripts
-- OAuth2 + PKCE is for frontend config demo — real API calls are always server-side
+- OAuth2 + PKCE is for frontend config demo  real API calls are always server-side
 
 ---
 
@@ -59,7 +59,7 @@ This system consists of two decoupled components:
 **You cannot create/delete real data from the CodePen frontend!**  
 All API requests are blocked by CORS, even with OAuth2.  
 **Only the backend scripts actually perform operations**.  
-UI is a config simulator and demo — not a real data manager.
+UI is a config simulator and demo  not a real data manager.
 
 ---
 
