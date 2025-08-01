@@ -13,11 +13,11 @@ function askQuestion(query) {
 }
 
 async function main() {
-  const SUBDOMAIN = await askQuestion("Enter your Zendesk subdomain: ");
-  const EMAIL = await askQuestion("Enter your Zendesk email: ");
-  const API_TOKEN = await askQuestion("Enter your Zendesk API token: ");
+  const SUBDOMAIN = await askQuestion("Enter your support platform subdomain: ");
+  const EMAIL = await askQuestion("Enter your agent email: ");
+  const API_TOKEN = await askQuestion("Enter your API token: ");
 
-  function getZendeskHeaders() {
+  function getApiHeaders() {
     const auth = Buffer.from(`${EMAIL}/token:${API_TOKEN}`).toString('base64');
     return {
       "Authorization": `Basic ${auth}`,
@@ -25,24 +25,24 @@ async function main() {
     };
   }
 
-  function getZendeskUrl(path) {
-    return `https://${SUBDOMAIN}.zendesk.com${path}`;
+  function getApiUrl(path) {
+    return `https://${SUBDOMAIN}.zendesk.com${path}`; // Keep endpoint for API
   }
 
   async function getAll(path) {
-    const res = await fetch(getZendeskUrl(path), {
+    const res = await fetch(getApiUrl(path), {
       method: "GET",
-      headers: getZendeskHeaders()
+      headers: getApiHeaders()
     });
     const data = await res.json();
     return data;
   }
 
   async function deleteById(path, id, label, force = false) {
-    const url = getZendeskUrl(`${path}/${id}.json${force ? '?force=true' : ''}`);
+    const url = getApiUrl(`${path}/${id}.json${force ? '?force=true' : ''}`);
     const res = await fetch(url, {
       method: "DELETE",
-      headers: getZendeskHeaders()
+      headers: getApiHeaders()
     });
     if (res.ok) {
       console.log(`🗑️ Deleted ${label} (ID: ${id})`);
@@ -53,7 +53,7 @@ async function main() {
   }
 
   async function runBulkDelete() {
-    console.log(`🚨 Starting cleanup (no dependency on orgs)`);
+    console.log(`🚨 Starting bulk cleanup (tickets, users, organizations)`);
 
     // 1. Delete tickets where subject starts with "Issue #"
     try {
@@ -85,11 +85,11 @@ async function main() {
       const orgData = await getAll("/api/v2/organizations.json");
       for (const o of orgData.organizations) {
         if (o.name && o.name.match(/\d{13,}/)) {
-          await deleteById("/api/v2/organizations", o.id, `Org "${o.name}"`);
+          await deleteById("/api/v2/organizations", o.id, `Organization "${o.name}"`);
         }
       }
     } catch (e) {
-      console.log("⚠️ Could not fetch or delete orgs:", e.message);
+      console.log("⚠️ Could not fetch or delete organizations:", e.message);
     }
 
     console.log("✅ Bulk delete script finished.");
