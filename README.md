@@ -110,7 +110,7 @@ node bulk_delete_entities.js
 * 🔄 Fully modular and **idempotent**
 * ✅ CORS-compliant frontend (PKCE)
 * ✅ Error handling built-in
-* 🎯 Aligns with **Zendesk’s API standards** and secure integration practices
+* 🎯 Follows secure design principles for API-first platforms and OAuth-based integrations
 
 > Built for demo and technical assessment purposes — not intended for production use without modification.
 
