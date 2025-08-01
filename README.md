@@ -3,8 +3,6 @@
 This is a **modular, sandbox-safe simulation tool** created for technical assessment purposes.
 It demonstrates how to **programmatically manage support platform entities** — including organizations, users, and tickets — using best-practice API integration flows.
 
-✅ Ideal for **demo environments**, **API workflow testing**, and **Technical Architect evaluations**.
-
 ---
 
 ## 🧩 Project Architecture
@@ -113,13 +111,6 @@ node bulk_delete_entities.js
 * 🎯 Follows secure design principles for API-first platforms and OAuth-based integrations
 
 > Built for demo and technical assessment purposes — not intended for production use without modification.
-
----
-
-## 📘 License & Use
-
-This project was created for **evaluation and presentation purposes only** under a candidate NDA.
-It is not intended for public reuse without approval.
 
 ---
 
