@@ -126,7 +126,10 @@ The following is the full folder structure of this project, with inline comments
 acme-api-entity-generator/
 ├── create_entities.js                   # Node.js script to create orgs, users, tickets
 ├── bulk_delete_entities.js              # Cleanup script (idempotent)
-├── package.json                         # Node.js dependencies (if present)
+├── TicketGenerated.png
+├── TicketsUserCC-Comparison.png
+├── Users.png
+├── UsersComparison.png
 ├── /postman/                            # Postman collection + CSVs
 │   ├── Acme Support Platform API Demo.postman_collection.json
 │   ├── orgs.csv
