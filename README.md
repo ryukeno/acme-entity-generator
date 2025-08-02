@@ -49,10 +49,12 @@ This system consists of three modular components:
 
 ## 🔐 Authentication & Security
 
-| Auth Method      | Purpose                   | Used In          |
-|------------------|---------------------------|------------------|
-| 🔑 API Token     | CLI testing               | Node backend     |
-| 🔐 OAuth2 + PKCE | Frontend config/demo only | CodePen frontend |
+| Auth Method        | Purpose                   | Used In          |
+|--------------------|---------------------------|------------------|
+| 🔑 API Token       | CLI testing               | Node backend     |
+| 🔐 OAuth2 + PKCE   | Frontend config/demo only | CodePen frontend |
+| 🧪 Basic Auth      | Manual API calls          | Postman Runner   |
+
 
 - API tokens **never** used in the UI
 - OAuth2 PKCE is for frontend config only — no real requests
