@@ -156,7 +156,7 @@ acme-api-entity-generator/
 | DEL     | Delete Tickets               | `deletetickets.csv` |
 
 > 🧠 Secondary email **must** be handled separately: it's a new identity under the API rules, not a sub-field of the main user creation.
-
+```
 ---
 
 ## 🛠 Backend Setup Instructions
