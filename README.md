@@ -2,7 +2,7 @@
 
 # Acme Co  API Entity Generator Tool
 
-This is a **modular, sandbox-safe simulation tool** created for technical assessment purposes.  
+This is a **modular, sandbox-safe simulation tool** created to showcase how we can through different ways manage a support platform through API request from POSTMAN to Backends Scripts as well as CORS policies limitations.  
 It demonstrates how to **programmatically manage support platform entities**  including organizations, users, and tickets  using best-practice API integration flows.
 
 ---
