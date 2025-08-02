@@ -124,10 +124,10 @@ The following is the full folder structure of this project, with inline comments
 
 ```bash
 acme-api-entity-generator/
-├── create_entities.js               # Node.js script to create orgs, users, tickets
-├── bulk_delete_entities.js         # Cleanup script (idempotent)
-├── package.json                    # Node.js dependencies
-├── /postman/                       # Postman collection + CSVs
+├── create_entities.js                   # Node.js script to create orgs, users, tickets
+├── bulk_delete_entities.js              # Cleanup script (idempotent)
+├── package.json                         # Node.js dependencies (if present)
+├── /postman/                            # Postman collection + CSVs
 │   ├── Acme Support Platform API Demo.postman_collection.json
 │   ├── orgs.csv
 │   ├── users.csv
@@ -136,10 +136,8 @@ acme-api-entity-generator/
 │   ├── deleteorg.csv
 │   ├── deleteusers.csv
 │   └── deletetickets.csv
-├── /docs/                          # (Optional) Markdown docs, screenshots
-│   └── README.md
-└── /frontend/                      # CodePen or OAuth setup references (optional)
-    └── README_OAuth_Flow.md
+└── README.md                            # Main project documentation
+
 
 
 ### Collection Request Flow
