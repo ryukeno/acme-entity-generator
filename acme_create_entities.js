@@ -1,6 +1,5 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
-// Simple function to read a line from console without external package
 function askQuestion(query) {
   return new Promise(resolve => {
     process.stdout.write(query);
@@ -14,12 +13,13 @@ function askQuestion(query) {
 }
 
 async function run() {
-  // Interactive prompts for support platform credentials
   const SUBDOMAIN = await askQuestion('Enter your support platform subdomain: ');
   const EMAIL = await askQuestion('Enter your agent email: ');
   const API_TOKEN = await askQuestion('Enter your API token: ');
 
-  const OAUTH_TOKEN = ""; // Leave empty to use API token
+  const OAUTH_TOKEN = ""; // Leave empty if using API token
+
+  const runId = `nodegen-${Date.now()}`;
 
   function getApiHeaders() {
     if (OAUTH_TOKEN) {
@@ -37,7 +37,7 @@ async function run() {
   }
 
   function getApiUrl(path) {
-    return `https://${SUBDOMAIN}.zendesk.com${path}`; // Endpoint must remain for real API
+    return `https://${SUBDOMAIN}.zendesk.com${path}`;
   }
 
   function printApiError(res, data, context) {
@@ -50,36 +50,50 @@ async function run() {
     });
   }
 
-  async function createOrganization(name) {
-    const body = JSON.stringify({ organization: { name } });
+  async function createOrganization(name, tag) {
+    const body = JSON.stringify({
+      organization: {
+        name,
+        tags: [tag]
+      }
+    });
+
     const res = await fetch(getApiUrl("/api/v2/organizations.json"), {
       method: "POST",
       headers: getApiHeaders(),
       body
     });
+
     const data = await res.json();
     if (!res.ok) {
       printApiError(res, data, "organization creation");
       throw new Error(data.error || data.description || JSON.stringify(data));
     }
+
     console.log(`🏢 Organization: ${data.organization.name} (ID: ${data.organization.id})`);
     return data.organization;
   }
 
-  async function createUser(name, email, orgId, altEmail) {
-    const user = { name, email, organization_id: orgId };
+  async function createUser(name, email, orgId, altEmail, tag) {
+    const user = {
+      name,
+      email,
+      organization_id: orgId,
+      tags: [tag]
+    };
+
     const res = await fetch(getApiUrl("/api/v2/users.json"), {
       method: "POST",
       headers: getApiHeaders(),
       body: JSON.stringify({ user })
     });
+
     const data = await res.json();
     if (!res.ok) {
       printApiError(res, data, "user creation");
       throw new Error(data.error || data.description || JSON.stringify(data));
     }
 
-    // Add alternate email
     const addEmailRes = await fetch(getApiUrl(`/api/v2/users/${data.user.id}/identities.json`), {
       method: "POST",
       headers: getApiHeaders(),
@@ -87,9 +101,10 @@ async function run() {
         identity: { type: "email", value: altEmail }
       })
     });
+
     if (!addEmailRes.ok) {
       const err = await addEmailRes.json();
-      console.log(`Warning: Could not add alternate email for ${email}`, err);
+      console.log(`⚠️ Warning: Could not add alt email for ${email}`, err);
     }
 
     console.log(`👤 User: ${data.user.name} (${email}, alt: ${altEmail}) [ID: ${data.user.id}]`);
@@ -99,21 +114,24 @@ async function run() {
   async function createTicket(subject, requesterId, ccEmail) {
     const ticket = {
       subject,
-      comment: { body: "Created by demo generator" },
+      comment: { body: "Created by node generator" },
       priority: "normal",
       requester_id: requesterId,
       collaborators: [ccEmail]
     };
+
     const res = await fetch(getApiUrl("/api/v2/tickets.json"), {
       method: "POST",
       headers: getApiHeaders(),
       body: JSON.stringify({ ticket })
     });
+
     const data = await res.json();
     if (!res.ok) {
       printApiError(res, data, "ticket creation");
       throw new Error(data.error || data.description || JSON.stringify(data));
     }
+
     console.log(`🎟️ Ticket: "${data.ticket.subject}" | requester: #${requesterId}, cc: ${ccEmail} (ID: ${data.ticket.id})`);
     return data.ticket;
   }
@@ -123,26 +141,28 @@ async function run() {
     const users = [];
     const tickets = [];
 
-    const runId = Date.now();
-
     for (let i = 1; i <= 10; i++) {
-      orgs.push(await createOrganization(`Demo Org ${i} - ${runId}`));
+      const orgName = `Demo Org ${i} (${runId})`;
+      const orgTag = `node-org-${runId}`;
+      orgs.push(await createOrganization(orgName, orgTag));
     }
 
     for (let i = 1; i <= 10; i++) {
-      const org = orgs[i - 1];
-      const email = `user${i}@example.com`;
-      const altEmail = `user${i}+alt@example.com`;
-      users.push(await createUser(`User ${i}`, email, org.id, altEmail));
+      const userName = `Node User ${i} - ${runId}`;
+      const email = `nodeuser${i}-${runId}@example.com`;
+      const altEmail = `nodeuser${i}-alt-${runId}@example.com`;
+      const userTag = `node-user-${runId}`;
+      users.push(await createUser(userName, email, orgs[i - 1].id, altEmail, userTag));
     }
 
     for (let i = 0; i < 10; i++) {
       const requester = users[i];
       const cc = users[(i + 1) % users.length];
-      tickets.push(await createTicket(`Issue #${i + 1}`, requester.id, cc.email));
+      const subject = `Node Issue ${i + 1} (${runId})`;
+      tickets.push(await createTicket(subject, requester.id, cc.email));
     }
 
-    console.log("✅ Done! 10 organizations, 10 users (with 2 emails each), 10 tickets created.");
+    console.log(`✅ Done! Created with run ID: ${runId}`);
   }
 
   await main();
