@@ -26,7 +26,7 @@ async function main() {
   }
 
   function getApiUrl(path) {
-    return `https://${SUBDOMAIN}.zendesk.com${path}`; // Keep endpoint for API
+    return `https://${SUBDOMAIN}.zendesk.com${path}`;
   }
 
   async function getAll(path) {
@@ -34,8 +34,7 @@ async function main() {
       method: "GET",
       headers: getApiHeaders()
     });
-    const data = await res.json();
-    return data;
+    return await res.json();
   }
 
   async function deleteById(path, id, label, force = false) {
@@ -53,13 +52,13 @@ async function main() {
   }
 
   async function runBulkDelete() {
-    console.log(`🚨 Starting bulk cleanup (tickets, users, organizations)`);
+    console.log(`🚨 Starting bulk cleanup (tickets → users → orgs)`);
 
-    // 1. Delete tickets where subject starts with "Issue #"
+    // 1. Delete tickets like "Node Issue 1 (nodegen-...)""
     try {
       const ticketData = await getAll("/api/v2/tickets.json");
       for (const t of ticketData.tickets) {
-        if (t.subject && t.subject.startsWith("Issue #")) {
+        if (t.subject && t.subject.startsWith("Node Issue") && t.subject.includes("nodegen-")) {
           await deleteById("/api/v2/tickets", t.id, `Ticket "${t.subject}"`);
         }
       }
@@ -67,24 +66,23 @@ async function main() {
       console.log("⚠️ Could not fetch or delete tickets:", e.message);
     }
 
-    // 2. Delete users with known emails
+    // 2. Delete users like "nodeuserX-nodegen-...@example.com"
     try {
       const userData = await getAll("/api/v2/users.json");
-      const knownEmails = Array.from({ length: 10 }, (_, i) => `user${i + 1}@example.com`);
       for (const u of userData.users) {
-        if (u.email && knownEmails.includes(u.email)) {
-          await deleteById("/api/v2/users", u.id, `User "${u.email}"`, true); // force delete
+        if (u.email && u.email.match(/^nodeuser\d+-nodegen-\d+@example\.com$/)) {
+          await deleteById("/api/v2/users", u.id, `User "${u.email}"`, true);
         }
       }
     } catch (e) {
       console.log("⚠️ Could not fetch or delete users:", e.message);
     }
 
-    // 3. Delete all orgs that include a 13-digit run ID
+    // 3. Delete orgs like "Demo Org X (nodegen-...)""
     try {
       const orgData = await getAll("/api/v2/organizations.json");
       for (const o of orgData.organizations) {
-        if (o.name && o.name.match(/\d{13,}/)) {
+        if (o.name && o.name.match(/^Demo Org \d+ \(nodegen-\d+\)$/)) {
           await deleteById("/api/v2/organizations", o.id, `Organization "${o.name}"`);
         }
       }
