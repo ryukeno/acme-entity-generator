@@ -1,5 +1,12 @@
 <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/bc6c46b6-9334-4f96-bc2e-375e608660f2" />
 
+## TASK 1 : 
+- have at least 10 tickets created (any subject, any body)
+- each ticket has a unique user in CC that is different from a ticket requester (any name, any @example.com email address)
+- each user should belong to a unique organization (any name)
+- each user should have 2 email addresses associated with the user profile (any @example.com email address))
+
+I have uploaded some screenshot that shows these and the different means of how they were generated please refer to the .png files.
 
 # Acme Co API Entity Generator Tool
 
