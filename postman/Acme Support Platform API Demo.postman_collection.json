@@ -1,0 +1,592 @@
+{
+	"info": {
+		"_postman_id": "70191d03-84f5-45e6-b92b-8a371aa35012",
+		"name": "Acme Support Platform API Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40026882"
+	},
+	"item": [
+		{
+			"name": "Create Acme Organization (run it in runner with orgs.csv)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let orgId = pm.response.json().organization.id;\r",
+							"let orgName = pm.response.json().organization.name;\r",
+							"pm.environment.set(orgName, orgId);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"organization\": {\r\n    \"name\": \"{{org_name}}\",\r\n    \"tags\": [\"postman-demo\"]\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{acme_subdomain}}.zendesk.com/api/v2/organizations.json",
+					"protocol": "https",
+					"host": [
+						"{{acme_subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"organizations.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Export All Organization IDs",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{acme_subdomain}}.zendesk.com/api/v2/organizations.json?per_page=100",
+					"protocol": "https",
+					"host": [
+						"{{acme_subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"organizations.json"
+					],
+					"query": [
+						{
+							"key": "per_page",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete all Orgs by id from file (run first previous Export All then run it with deleteorg.csv)",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://{{acme_subdomain}}.zendesk.com/api/v2/organizations/{{org_id}}.json",
+					"protocol": "https",
+					"host": [
+						"{{acme_subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"organizations",
+						"{{org_id}}.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Users(need to run in runner with Create Acme Organization first then run this with users.csv)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Récupère l'ID de l'utilisateur créé\r",
+							"let user = pm.response.json().user;\r",
+							"\r",
+							"if (user && user.id && user.email) {\r",
+							"  let userId = user.id;\r",
+							"  let userEmail = user.email;\r",
+							"\r",
+							"  // Sauvegarde le user ID dans l'environnement avec l'email comme clé\r",
+							"  pm.environment.set(userEmail + \"_id\", userId);\r",
+							"\r",
+							"  // Log pour débogage\r",
+							"  console.log(\"✅ Created user ID:\", userId, \"for\", userEmail);\r",
+							"} else {\r",
+							"  console.log(\"❌ Erreur : Impossible de récupérer l'utilisateur dans la réponse.\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Récupère les données de la ligne CSV\r",
+							"let orgName = pm.iterationData.get(\"org_name\");\r",
+							"let userName = pm.iterationData.get(\"user_name\");\r",
+							"let userEmail = pm.iterationData.get(\"user_email\");\r",
+							"\r",
+							"// Récupère l'ID de l'organisation\r",
+							"let orgId = pm.environment.get(orgName);\r",
+							"\r",
+							"// Définit les variables utilisées dans le body de la requête de création utilisateur\r",
+							"pm.variables.set(\"org_id\", orgId);\r",
+							"pm.variables.set(\"user_name\", userName);\r",
+							"pm.variables.set(\"user_email\", userEmail);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"user\": {\r\n    \"name\": \"{{user_name}}\",\r\n    \"email\": \"{{user_email}}\",\r\n    \"organization_id\": \"{{org_id}}\",\r\n    \"tags\": [\"postman-demo\"],\r\n    \"active\": true,\r\n    \"verified\": false\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{acme_subdomain}}.zendesk.com/api/v2/users.json",
+					"protocol": "https",
+					"host": [
+						"{{acme_subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"users.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddSecondaryEmail (run in runner with addSecondaryEmail.csv cant be done in one shot different endpoint and secondary email is a new identity)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let userEmail = pm.iterationData.get(\"user_email\");\r",
+							"let altEmail = pm.iterationData.get(\"alt_email\");\r",
+							"\r",
+							"// Va chercher l'ID de l'utilisateur stocké dans l'étape de création\r",
+							"let userId = pm.environment.get(userEmail + \"_id\");\r",
+							"\r",
+							"if (!userId) {\r",
+							"  throw new Error(\"❌ User ID not found for \" + userEmail);\r",
+							"}\r",
+							"\r",
+							"pm.variables.set(\"user_id\", userId);\r",
+							"pm.variables.set(\"alt_email\", altEmail);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {\r",
+							"    console.log(\"✅ Email secondaire ajouté pour \" + pm.iterationData.get(\"user_email\"));\r",
+							"} else {\r",
+							"    console.error(\"❌ Échec pour \" + pm.iterationData.get(\"user_email\"));\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"identity\": {\r\n    \"type\": \"email\",\r\n    \"value\": \"{{alt_email}}\"\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ryukeno.zendesk.com/api/v2/users/{{user_id}}/identities.json",
+					"protocol": "https",
+					"host": [
+						"ryukeno",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"users",
+						"{{user_id}}",
+						"identities.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Export Users ID",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{acme_subdomain}}.zendesk.com/api/v2/users.json?email={{user_email}}",
+					"protocol": "https",
+					"host": [
+						"{{acme_subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"users.json"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "{{user_email}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Users (use Get Users ID first then fill the deleteusers.csv with the right users id)",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://{{acme_subdomain}}.zendesk.com/api/v2/users/{{user_id}}.json",
+					"protocol": "https",
+					"host": [
+						"{{acme_subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"users",
+						"{{user_id}}.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateTickets (use with TicketCreation.csv in Runner)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let requesterEmail = pm.iterationData.get(\"requester_email\");\r",
+							"let requesterId = pm.environment.get(requesterEmail + \"_id\");\r",
+							"let ccEmail = pm.iterationData.get(\"cc_email\");\r",
+							"\r",
+							"if (!requesterId) {\r",
+							"    throw new Error(\"❌ requesterId not found for: \" + requesterEmail);\r",
+							"}\r",
+							"\r",
+							"pm.variables.set(\"requester_id\", requesterId);\r",
+							"pm.variables.set(\"cc_email\", ccEmail);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {\r",
+							"    console.log(\"✅ Ticket created for \" + pm.iterationData.get(\"requester_email\") + \" with CC: \" + pm.iterationData.get(\"cc_email\"));\r",
+							"} else {\r",
+							"    console.error(\"❌ Ticket failed for \" + pm.iterationData.get(\"requester_email\"));\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ticket\": {\r\n    \"subject\": \"{{ticket_subject}}\",\r\n    \"description\": \"{{ticket_description}}\",\r\n    \"priority\": \"normal\",\r\n    \"requester_id\": {{requester_id}},\r\n    \"collaborators\": [\"{{cc_email}}\"],\r\n    \"tags\": [\"postman-demo\"]\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://ryukeno.zendesk.com/api/v2/tickets.json",
+					"protocol": "https",
+					"host": [
+						"ryukeno",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"tickets.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get TicketsID",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ryukeno.zendesk.com/api/v2/tickets.json",
+					"protocol": "https",
+					"host": [
+						"ryukeno",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"tickets.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteTickets (use GetTicketsID first then fill the deletetickets.csv with the right tickets id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let ticketId = pm.iterationData.get(\"ticket_id\");\r",
+							"\r",
+							"if (pm.response.code === 204) {\r",
+							"    console.log(`✅ Ticket ${ticketId} deleted successfully.`);\r",
+							"} else {\r",
+							"    console.error(`❌ Failed to delete ticket ${ticketId}.`);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{acme_email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{acme_api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://{{acme_subdomain}}.zendesk.com/api/v2/tickets/{{ticket_id}}.json",
+					"protocol": "https",
+					"host": [
+						"{{acme_subdomain}}",
+						"zendesk",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"tickets",
+						"{{ticket_id}}.json"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
