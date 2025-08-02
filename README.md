@@ -6,7 +6,8 @@
 - each user should belong to a unique organization (any name)
 - each user should have 2 email addresses associated with the user profile (any @example.com email address))
 
-I have uploaded some screenshot that shows these and the different means of how they were generated please refer to the .png files.
+I have uploaded some screenshot that shows these and the different means of how they were generated POSTMAN / NODEJS please refer to the .png files.
+The name Acme Co represent a fictional company that would like to perform these things for that purpose you can find on the CodePen link a UI where all can be directly downloaded as well and with some more explainations, and this UI is there solely to represent how a customer could potentially as well do it through his own interface but is pure simulation and a way to show case some front end skills. (https://codepen.io/Kyrian-Bourgi/pen/empBQbe) if you click on dry-run it allows you to simulate the same generation as POSTMAN and the NODEJS script does however as it is on CodePEN it is not possible to use it from there because of CORS Policies limitation that hinders a Browser to request an API. It is also not possible with OAuth. The front end is therefore purely just there as a bonus.
 
 # Acme Co API Entity Generator Tool
 
